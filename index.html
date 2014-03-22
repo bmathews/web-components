@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script>
+            var MyElement = Object.create(HTMLElement.prototype);
+            MyElement.createdCallback = function () {
+                console.log("created");
+                this.updateView();
+            };
+            MyElement.attachedCallback = function () {
+                console.log("attached");
+            };
+            MyElement.detachedCallback = function () {
+                console.log("detached");
+            };
+            MyElement.attributeChangedCallback = function (attr, oldVal, newVal) {
+                if (attr === "values") {
+                    this.updateView();
+                }
+            };
+            MyElement.updateView = function () {
+                var html = "";
+                var values = JSON.parse(this.getAttribute('values'));
+                var total = values.reduce(function (prev, next) { return prev + next; });
+
+                values.forEach(function (val) {
+                    html += '<div style="margin: 3px; height: 20px; background: blue; width: '+ val / total * 100+'px;"></div>';
+                });
+                this.innerHTML = html;
+            };
+            document.registerElement('bar-chart', {
+                prototype: MyElement
+            });
+
+        </script>
+    </head>
+    <body>
+        <bar-chart values="[50,100,30]"></bar-chart>
+    </body>
+</html>
